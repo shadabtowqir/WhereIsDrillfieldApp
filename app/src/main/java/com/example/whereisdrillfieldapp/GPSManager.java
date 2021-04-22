@@ -1,6 +1,7 @@
 package com.example.whereisdrillfieldapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,12 +17,13 @@ public class GPSManager implements LocationListener {
     String LOCATIONPROVIDER = LocationManager.GPS_PROVIDER;
 
     public GPSManager(MainActivity mainActivity) {
-
+        this.mainActivity = mainActivity;
+        locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
     }
 
     @Override
     public void onLocationChanged(Location location) {
-
+        mainActivity.updateGPSLocation(location);
     }
 
 
@@ -29,7 +31,9 @@ public class GPSManager implements LocationListener {
         if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
+            locationManager.requestLocationUpdates(LOCATIONPROVIDER, 2000, 0, this);
 
+            mainActivity.updateGPSLocation(locationManager.getLastKnownLocation(LOCATIONPROVIDER));
         }
     }
 
@@ -37,7 +41,7 @@ public class GPSManager implements LocationListener {
         if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-
+            locationManager.removeUpdates(this);
         }
     }
 
